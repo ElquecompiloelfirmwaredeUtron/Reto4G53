@@ -19,14 +19,15 @@ public class CbSucursal {
     public CbSucursal(){
     }
     
-    public ArrayList getListaSucursales() throws SQLException{
+    public ArrayList getListaSucursales(){
         System.out.println("Funcion getListaSucursales");
         ArrayList mListaSucursales = new ArrayList();
         Sucursal sucursal = null;
         try{
             connection = conexion.getConection();
             st = connection.createStatement();
-            rs = st.executeQuery("SELECT `idSucursal`, `nombreSucursal` FROM `sucursal` ; ");
+            rs = st.executeQuery("SELECT `idSucursal`, `nombreSucursal` FROM `sucursal` ");
+            
             while(rs.next()){
                 sucursal = new Sucursal();
                 sucursal.setIdSucursal(rs.getInt("idSucursal"));

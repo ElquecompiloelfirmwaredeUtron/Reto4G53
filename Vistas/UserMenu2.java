@@ -45,10 +45,10 @@ public class UserMenu2 extends javax.swing.JFrame {
     private void ListarEmpleados() {
         String filtroBusqueda = txtBuscarEMP.getText();
         if (filtroBusqueda.isEmpty()) {
-            String queryConsulta = "SELECT `nombreEmp`, `apellidos`, `tipoDocumento`, `documento`, `correo`, `FK_idSucursal` \n"
-                    + "FROM `empleado`\n"
+            String queryConsulta = "SELECT nombreEmp, apellidos, tipoDocumento, documento, correo, nombreSucursal\n"
+                    + "FROM empleado\n"
                     + "INNER JOIN sucursal\n"
-                    + "on empleado.FK_idSucursal = sucursal.idSucursal";
+                    + "ON empleado.FK_idSucursal = sucursal.idSucursal";
 
             try {
                 connection = conexion.getConection();
@@ -74,12 +74,13 @@ public class UserMenu2 extends javax.swing.JFrame {
                 }
 
             } catch (SQLException e) {
-                System.out.println("Error");
+                System.out.println("Error de sistema");
             }
 
         } else {
-            String queryConsulta = "SELECT nombreEmp,apellidos,tipoDocumento,documento,correo, nombreSucursal FROM empleado INNER JOIN sucursal WHERE empleado.FK_idSucursal = sucursal.idSucursal AND nombreEmp LIKE '%"
-                    + filtroBusqueda + "%' OR apellidos LIKE '%" + filtroBusqueda + "%'";
+            String queryConsulta = "SELECT nombreEmp, apellidos, tipoDocumento, documento, correo, nombreSucursal \n"
+                    + "FROM empleado INNER JOIN sucursal WHERE empleado.FK_idSucursal = sucursal.idSucursal AND nombreEmp LIKE '%\" + filtroBusqueda + OR apellidos\n"
+                    + "LIKE '%\" + filtroBusqueda+ '%";
             System.out.println(queryConsulta); //"SELECT * FROM empleados WHERE nombreEmp LIKE '%" + filtroBusqueda + "%' OR apellidos LIKE '%" + filtroBusqueda + "%' ";
 
         }
@@ -106,7 +107,7 @@ public class UserMenu2 extends javax.swing.JFrame {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error");
+            System.out.println("este es el Error");
         }
 
     }
@@ -114,7 +115,13 @@ public class UserMenu2 extends javax.swing.JFrame {
     private void listarDepartamentos() {
         String nombreDepartamento = txtDepartamento.getText();
         if (nombreDepartamento.isEmpty()) {
-            String query = "SELECT  `nombreSucursal`, nombreDepartamento, CONCAT'Zona ',zona,'.', tipoCall";
+            String query = "SELECT nombreSucursal, nombreDepartamento, CONCAT('Zona',Zona,'.',tipoCalle,' ', numero1,' #No.',numero2,' - ' ,numero3)\n"
+                    + "AS direccion\n"
+                    + "FROM direccion \n"
+                    + "INNER JOIN sucursal\n"
+                    + "WHERE idDireccion = FK_idDireccion\n"
+                    + "AND nombreDepartamento\n"
+                    + "Like'%%' ORDER BY nombreDepartamento;";
             try {
                 connection = conexion.getConection();
                 st = connection.createStatement();
@@ -128,13 +135,18 @@ public class UserMenu2 extends javax.swing.JFrame {
                     contenidoTablaDepartamento.addRow(departamentos);
                     tblDepartamentos.setModel(contenidoTablaDepartamento);
                 }
-            
 
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 System.out.println("Error");
             }
         } else {
-            String query = "SELECT  `nombreSucursal`, nombreDepartamento, CONCAT'Zona ',zona,'.', tipoCall";
+            String query = "SELECT nombreSucursal, nombreDepartamento, CONCAT('Zona',Zona,'.',tipoCalle,' ', numero1,' #No.',numero2,' - ' ,numero3)\n"
+                    + "AS direccion\n"
+                    + "FROM direccion \n"
+                    + "INNER JOIN sucursal\n"
+                    + "WHERE idDireccion = FK_idDireccion\n"
+                    + "AND nombreDepartamento\n"
+                    + "Like'%%' ORDER BY nombreDepartamento;";
             try {
                 connection = conexion.getConection();
                 st = connection.createStatement();
@@ -148,9 +160,8 @@ public class UserMenu2 extends javax.swing.JFrame {
                     contenidoTablaDepartamento.addRow(departamentos);
                     tblDepartamentos.setModel(contenidoTablaDepartamento);
                 }
-            
 
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 System.out.println("Error");
             }
         }
@@ -545,23 +556,22 @@ public class UserMenu2 extends javax.swing.JFrame {
 
     private void tblEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEmpleadosMouseClicked
         int row = tblEmpleados.getSelectedRow();
+        String sucursal = (String) tblDepartamentos.getValueAt(row, 0);
         System.out.println("Fila Seleccionada n°:" + row);
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Debes sellecionar un empleado.", "", JOptionPane.WARNING_MESSAGE);
-        } else {
-            String nombreEmp = tblEmpleados.getValueAt(row, 0).toString();
-            String apellidos = tblEmpleados.getValueAt(row, 1).toString();
-            String tipoDocumento = tblEmpleados.getValueAt(row, 2).toString();
-            String documento = tblEmpleados.getValueAt(row, 3).toString();
-            String correo = tblEmpleados.getValueAt(row, 4).toString();
-            String sucursal = tblEmpleados.getValueAt(row, 5).toString();
-
-            ShowUserForm showUserForm = new ShowUserForm(this, true);
-            ShowUserForm.recibeDatos(nombreEmp, apellidos, tipoDocumento, documento, correo, sucursal);
-            showUserForm.setVisible(true);
-            borrarDatosTabla();
-            ListarEmpleados();
-
+        System.out.println(sucursal);
+        String departamento = (String) tblDepartamentos.getValueAt(row, 0);
+        String queryIdSucursal = "SELECT `idSucursal` FROM `sucursal` INNER JOIN `direccion` WHERE FK_idDireccion = idDireccion AND nombreSucursal = '"+ sucursal +"';";
+        try{
+            connection = conexion.getConection();
+            st =connection.createStatement();
+            rs = st.executeQuery(queryIdSucursal);
+            while (rs.next()){
+                int idSucursal = rs.getInt("idSucursal");
+                GestionarSucursalesForm gestionarSucursal = new GestionarSucursalesForm(this, true);
+                gestionarSucursal.setVisible(true);
+            }
+        }catch (SQLException e){
+            System.out.println(e);
         }
     }//GEN-LAST:event_tblEmpleadosMouseClicked
 

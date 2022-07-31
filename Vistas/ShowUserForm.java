@@ -1,5 +1,3 @@
-
- 
 package Vistas;
 
 import Modelo.Conexion;
@@ -9,27 +7,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
-
 public class ShowUserForm extends javax.swing.JDialog {
-
-    static void recibeDatos(String nombreEmp, String apellidos, String tipoDocumento, String documento, String correo, String sucursal) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 
     Conexion conexion = new Conexion();
     Connection connection;
     Statement st;
     ResultSet rs;
 
-
     public ShowUserForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
-        
+
     }
-    public void recibeDatos(String sucursal, String nombreEmp, String apellidos, String documentos, String correo){
+
+    public void recibeDatos(String sucursal, String nombreEmp, String apellidos, String documentos, String correo) {
         System.out.println("");
         txtSucursal.setText(sucursal);
         txtNombre.setText(nombreEmp);
@@ -37,32 +28,68 @@ public class ShowUserForm extends javax.swing.JDialog {
         txtDocumento.setText(documentos);
         txtCorreo.setText(correo);
     }
-    public void actualizarEmpleado(){
-        String sucursal = txtSucursal.getText();
-        String nombre = txtNombre.getText();
+
+    public void actualizarEmpleado() {
         String documento = txtDocumento.getText();
-        String apellido = txtApellido.getText();
-        String correo = txtCorreo.getText();
-        if(nombre.isEmpty()){
-            JOptionPane.showMessageDialog(this, "Campo Nombre falta por rellenar", "" ,JOptionPane.WARNING_MESSAGE);
-        }else if(apellido.isEmpty()){
-            JOptionPane.showMessageDialog(this, "Campo Apellido falta por rellenar", "" ,JOptionPane.WARNING_MESSAGE);
-        }else if(correo.isEmpty()){
-            JOptionPane.showMessageDialog(this, "Campo Correo falta por rellenar", "" ,JOptionPane.WARNING_MESSAGE);
-        }else{
-            //String query = "UPDATE `empleados` SET `nombreEmp`='"+ nombre +"',`apellidos`='"+apellido+"',`correo`='"+correo+"'"+ "'WHERE `idEmp` =" + idEmp+ ";"; 
-            String query = "UPDATE `empleados` SET `nombreEmp`='" + nombre +"',`apellidos`='"+ apellido +"',`documento`='"+ documento +"',`correo`='"+ correo +
-                    "' WHERE `idEMP`= +idEmp+;";
-         try{
-             connection = conexion.getConection();
-             st = connection.createStatement();
-             st.executeUpdate(query);
-             JOptionPane.showMessageDialog(this, "Se han actualizado los datos correctamente.","",JOptionPane.INFORMATION_MESSAGE);
-         } catch (SQLException e){
-             JOptionPane.showMessageDialog(this, "Ha ocurrido un error.","",JOptionPane.INFORMATION_MESSAGE);
-         }
-         this.dispose();
-         
+        String queryIdEmpleado = "SELECT `idEmp` FROM `empleado` WHERE documento = '" + documento + "';";
+        try {
+            connection = conexion.getConection();
+            st = connection.createStatement();
+            rs = st.executeQuery(queryIdEmpleado);
+            while (rs.next()) {
+                int idEmpleado = rs.getInt("idEmp");
+                String sucursal = txtSucursal.getText();
+                String nombre = txtNombre.getText();
+                String apellido = txtApellido.getText();
+                String correo = txtCorreo.getText();
+
+                if (nombre.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Campo Nombre falta por rellenar", "", JOptionPane.WARNING_MESSAGE);
+                } else if (apellido.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Campo Apellido falta por rellenar", "", JOptionPane.WARNING_MESSAGE);
+                } else if (correo.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Campo Correo falta por rellenar", "", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    //String query = "UPDATE `empleados` SET `nombreEmp`='"+ nombre +"',`apellidos`='"+apellido+"',`correo`='"+correo+"'"+ "'WHERE `idEmp` =" + idEmp+ ";"; 
+                    String query = "UPDATE `empleados` SET `nombreEmp`='" + nombre + "',`apellidos`='" + apellido + "',`documento`='" + documento + "',`correo`='" + correo
+                            + "' WHERE `idEMP`= +idEmp+;";
+                    try {
+                        connection = conexion.getConection();
+                        st = connection.createStatement();
+                        st.executeUpdate(query);
+                        JOptionPane.showMessageDialog(this, "Se han actualizado los datos correctamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(this, "Ha ocurrido un error.", "", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    this.dispose();
+
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Profe, no deje huerfnitos a los TRY en el paso a paso :V ", "", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public void EliminarEmpleado() {
+        String documento = txtDocumento.getText();
+        String queryIdEmpleado = "SELECT `idEmp` FROM `empleado` WHERE documento = '" + documento + "';";
+        try {
+            connection = conexion.getConection();
+            st = connection.createStatement();
+            rs = st.executeQuery(queryIdEmpleado);
+            while (rs.next()) {
+                int idEmpleado = rs.getInt("idEmp");
+                String queryEliminar = "DELETE `idEmp` FROM `empleado` WHERE documento = '" + documento + "';";
+                try {
+                    st.executeUpdate(queryEliminar);
+                    JOptionPane.showMessageDialog(this,"El Empleado ha Sido Eliminado");
+                    this.dispose();
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(this, "El empleado no ha sido eliminado", "", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }catch (SQLException e){
+            System.out.println(e);
         }
     }
 
@@ -88,7 +115,7 @@ public class ShowUserForm extends javax.swing.JDialog {
         btnActualizar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         txtSucursal = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -153,8 +180,13 @@ public class ShowUserForm extends javax.swing.JDialog {
             }
         });
 
-        jButton1.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
-        jButton1.setText("Cancelar");
+        btnCancelar.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -192,7 +224,7 @@ public class ShowUserForm extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
@@ -232,7 +264,7 @@ public class ShowUserForm extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnActualizar)
                         .addComponent(btnEliminar))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -275,6 +307,10 @@ public class ShowUserForm extends javax.swing.JDialog {
     private void txtApellidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellidoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtApellidoActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -320,8 +356,8 @@ public class ShowUserForm extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

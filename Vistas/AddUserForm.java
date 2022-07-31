@@ -1,7 +1,6 @@
 package Vistas;
 
 import Controlador.CbSucursal;
-import Controlador.EnumTipodocumento;
 import Modelo.Conexion;
 import Modelo.Sucursal;
 import Modelo.TipoDocumentoEnum;
@@ -26,27 +25,42 @@ public class AddUserForm extends javax.swing.JDialog {
     DefaultTableModel contenidoTablaEmpleados;
     ArrayList mListaSucursales;
     CbSucursal cbSucursales;
+    private CbSucursal CbSucursal;
 
     public AddUserForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        System.out.println("Por aqui");
         modeloEnumTipoDocumento = new DefaultComboBoxModel(TipoDocumentoEnum.values());
+        System.out.println("de pronto");
         initComponents();
+        System.out.println("Aqui ");
         cbSucursales = new CbSucursal();
+        System.out.println("Es");
         mListaSucursales = new ArrayList();
         llenarComboboxSucursales();
+        System.out.println("Despues de llenar combobox");
         this.setLocationRelativeTo(parent);
     }
 
     public String llenarComboboxSucursales() {
+        System.out.println("Depronto aqui");
+        //mListaSucursales = cbSucursales.getListaSucursales();
+        //mListaSucursales = cbSucursales.getListaSucursales();
         mListaSucursales = cbSucursales.getListaSucursales();
         Iterator iterator = mListaSucursales.iterator();
         while (iterator.hasNext()) {
             Sucursal sucursal = (Sucursal) iterator.next();
             cbSucursal.addItem(sucursal);
+            //System.out.println("Te lo dije");
+            System.out.println("sucursales: " + sucursal.getNombreSucursal());
         }
         String nombreSucursal = cbSucursal.getSelectedItem().toString();
         String query = "SELECT idSucursal FROM `sucursal` WHERE nombreSucursal = '" + nombreSucursal + "';";
+        System.out.println("Antes de query");
+        //String query = "SELECT nombreSucursal FROM sucursal;";
+        System.out.println("Despues de query");
         return query;
+        
     }
 
     public void ActualizarEmpleado() {
@@ -131,8 +145,8 @@ public class AddUserForm extends javax.swing.JDialog {
         btnCancelar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        cbSucursal = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
+        cbSucursal = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -207,16 +221,16 @@ public class AddUserForm extends javax.swing.JDialog {
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/logo.png"))); // NOI18N
 
-        cbSucursal.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jLabel9.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(153, 255, 255));
+        jLabel9.setText("Sucursal:");
+
+        cbSucursal.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         cbSucursal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbSucursalActionPerformed(evt);
             }
         });
-
-        jLabel9.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(153, 255, 255));
-        jLabel9.setText("Sucursal:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -243,8 +257,8 @@ public class AddUserForm extends javax.swing.JDialog {
                             .addComponent(cbTipoDocumento, javax.swing.GroupLayout.Alignment.LEADING, 0, 225, Short.MAX_VALUE)
                             .addComponent(txtNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
                             .addComponent(txtCorreo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-                            .addComponent(cbSucursal, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtDocumento, javax.swing.GroupLayout.Alignment.LEADING)))
+                            .addComponent(txtDocumento, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbSucursal, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel8)
@@ -291,16 +305,16 @@ public class AddUserForm extends javax.swing.JDialog {
                                     .addComponent(jLabel2))
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel9))))
-                        .addGap(29, 29, 29)
+                                    .addComponent(jLabel9)
+                                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(28, 28, 28)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-4, 0, 740, -1));
